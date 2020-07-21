@@ -29,6 +29,10 @@ public class MessageService {
     public List<Message> findLetters(String conversationId, int offset, int limit) {
         return messageMapper.selectLetters(conversationId, offset, limit);
     }
+    public int findLetterCount(String conversationId) {
+        return messageMapper.selectLetterCount(conversationId);
+    }
+
 
     public int findLetterUnreadCount(int userId, String conversationId) {
         return messageMapper.selectLetterUnreadCount(userId, conversationId);

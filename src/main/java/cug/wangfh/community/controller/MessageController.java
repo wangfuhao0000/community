@@ -10,6 +10,7 @@ import cug.wangfh.community.util.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -47,8 +48,30 @@ public class MessageController implements CommunityConstant {
             for (Message message : conversationList) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("conversation", message);
-                map.put("letterCount", messageService.findLe)
+                map.put("letterCount", messageService.findLe);
             }
         }
+    }
+
+    @RequestMapping(path = "/letter/detail/{conversationId}", method = RequestMethod.GET)
+    public String getLetterDetail(@PathVariable("conversationId") String conversationId,
+                                  Page page, Model model) {
+        // 分页信息
+        page.setLimit(5);
+        page.setPath("/letter/detail" + conversationId);
+        page.setRows(messageService.findLetterCount(conversationId));
+
+        //私信列表
+        List<Message> letterList = messageService.findLetters(conversationId, page.getOffset(), page.getLimit());
+        List<Map<String, Object>> letters = new ArrayList<>();
+        if (letterList != null) {
+            for (Message message : letterList) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("letter", message);
+                map.put("fromUser", userService.findUserById(message.getFromId()));
+                letters.add(map);
+            }
+        }
+        model.addAttribute("letters", letters);
     }
 }
